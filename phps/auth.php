@@ -42,20 +42,17 @@ $response = array(
 if ($response['loggedin'] && isset($_SESSION['id'])) {
     $sql = "SELECT user_avatar FROM accounts WHERE id = ?";
     if ($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("i", $_SESSION['id']); 
-        if ($stmt->execute()) {
-            $result = $stmt->get_result();
-            if ($row = $result->fetch_assoc()) {
-                // If user_avatar is set, use it; otherwise, use default avatar
-                $response['user_avatar'] = $row['user_avatar'] ?? '../images/default_avatar.jpeg';
-            }
+        $stmt->execute([$_SESSION['id']]);
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            // If user_avatar is set, use it; otherwise, use default avatar
+            $response['user_avatar'] = $row['user_avatar'] ?? '../images/default_avatar.jpeg';
         }
-        $stmt->close();
+        $stmt = null;
     }
 }
 
 // Output the response as JSON for the frontend to use
 // This includes login status, username, and avatar if available
 echo json_encode($response); // Output the response as JSON
-$conn->close(); // Close the database connection
+$conn = null; // Close the PDO connection
 ?>
