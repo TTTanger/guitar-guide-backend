@@ -18,10 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 }
 require_once 'mysql.php';
 
+
 $sql = "SELECT key_name, lang, value FROM translations";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
-$result = $stmt->get_result();
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $translations = [];
 function setNestedValue(&$array, $path, $value) {
@@ -34,7 +35,7 @@ function setNestedValue(&$array, $path, $value) {
     $temp = $value;
 }
 
-while ($row = $result->fetch_assoc()) {
+foreach ($result as $row) {
     $lang = $row['lang'];
     $key = $row['key_name'];
     $value = $row['value'];

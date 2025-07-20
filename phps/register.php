@@ -35,51 +35,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
     
-    // Check if the username already exists in the database
-    $sql = "SELECT user_name FROM accounts WHERE user_name = ?";
-    
-    if($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("s", $username); // Bind username as string
-        
-        if($stmt->execute()) {
-            $stmt->store_result();
-            
-            if ($stmt->num_rows > 0) {
-                // Username already exists
-                $response["success"] = false;
-                $response["error"] = "User existed!";
-            }
-            else {
-                $stmt->close();
-                $date = date("Y-m-d"); // Current date for account creation
-                $avatar = "../images/default_avatar.jpeg"; // Default avatar path
-                
-                // Insert the new user into the database
-                $sql = "INSERT INTO accounts (user_name, user_password, user_avatar, created_at) VALUES (?, ?, ?, ?)";
-                if($stmt = $conn->prepare($sql)) {
-                    
-                    $stmt->bind_param("ssss", $username, $password, $avatar, $date);
-                    if($stmt->execute()) {
-                        $stmt->store_result();
-                        $response["success"] = true;
-                        $response["message"] = "User created successfully!";
-                        $response["redirect"] = "../htmls/login.html"; // Redirect to login page after registration
-                    }
-                }
-            }
-        }
-        
-        // If registration failed, set error message
-        if(!isset($response["success"])) {
+    // Check if the username already exists in the database (PDO version)
+    $sql = "SELECT user_name FROM accounts WHERE user_name = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    if($stmt->execute()) {
+        if ($stmt->rowCount() > 0) {
+            // Username already exists
             $response["success"] = false;
-            $response["error"] = "Invalid username or password.";
+            $response["error"] = "User existed!";
+        } else {
+            $date = date("Y-m-d"); // Current date for account creation
+            $avatar = "../images/default_avatar.jpeg"; // Default avatar path
+            // Insert the new user into the database
+            $sql = "INSERT INTO accounts (user_name, user_password, user_avatar, created_at) VALUES (:username, :password, :avatar, :created_at)";
+            $stmt2 = $conn->prepare($sql);
+            $stmt2->bindParam(':username', $username, PDO::PARAM_STR);
+            $stmt2->bindParam(':password', $password, PDO::PARAM_STR);
+            $stmt2->bindParam(':avatar', $avatar, PDO::PARAM_STR);
+            $stmt2->bindParam(':created_at', $date, PDO::PARAM_STR);
+            if($stmt2->execute()) {
+                $response["success"] = true;
+                $response["message"] = "User created successfully!";
+                $response["redirect"] = "../htmls/login.html"; // Redirect to login page after registration
+            }
+            $stmt2 = null;
         }
-        $stmt->close();
     }
+    // If registration failed, set error message
+    if(!isset($response["success"])) {
+        $response["success"] = false;
+        $response["error"] = "Invalid username or password.";
+    }
+    $stmt = null;
     
     header('Content-Type: application/json'); // Set response type to JSON
     echo json_encode($response); // Output the response as JSON
-    $conn->close(); // Close the database connection
+    $conn = null; // Close the PDO connection
     exit;
 }
 ?>

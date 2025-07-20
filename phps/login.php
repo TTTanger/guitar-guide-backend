@@ -29,43 +29,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $response = [];
 
-    // Prepare SQL to fetch user by username
-    $sql = "SELECT id, user_name, user_password FROM accounts WHERE user_name = ?";
-    
-    if($stmt = $conn->prepare($sql)) {
-        $stmt->bind_param("s", $username); // Bind username as string
-        
-        if($stmt->execute()) {
-            $stmt->store_result();
-            
-            if($stmt->num_rows == 1) {
-                $stmt->bind_result($id, $db_username, $db_password);
-                if($stmt->fetch()) {
-                    if($password == $db_password) { 
-                        // Set session variables on successful login
-                        $_SESSION["loggedin"] = true;
-                        $_SESSION["id"] = $id;
-                        $_SESSION["username"] = $username;
-                        
-                        $response["success"] = true;
-                        $response["redirect"] = "../htmls/index.html"; // Redirect to homepage after login
-                    }
-                }
+    // Prepare SQL to fetch user by username (PDO version)
+    $sql = "SELECT id, user_name, user_password FROM accounts WHERE user_name = :username";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    if ($stmt->execute()) {
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            if ($password == $row['user_password']) {
+                // Set session variables on successful login
+                $_SESSION["loggedin"] = true;
+                $_SESSION["id"] = $row['id'];
+                $_SESSION["username"] = $username;
+                $response["success"] = true;
+                $response["redirect"] = "../htmls/index.html"; // Redirect to homepage after login
             }
         }
-        
-        // If login failed, set error message
-        if(!isset($response["success"])) {
-            $response["success"] = false;
-            $response["error"] = "Invalid username or password.";
-        }
-        
-        $stmt->close();
     }
+    // If login failed, set error message
+    if(!isset($response["success"])) {
+        $response["success"] = false;
+        $response["error"] = "Invalid username or password.";
+    }
+    $stmt = null;
     
     header('Content-Type: application/json'); // Set response type to JSON
     echo json_encode($response); // Output the response as JSON
-    $conn->close(); // Close the database connection
+    $conn = null; // Close the PDO connection
     exit;
 }
 ?>
