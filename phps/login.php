@@ -18,6 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
+// 设置 session cookie 参数，支持跨域、SameSite=None、secure
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '.guitar-guide.org', // 适配主域和所有子域
+    'secure' => true, // 生产环境建议 true
+    'httponly' => true,
+    'samesite' => 'None'
+]);
 session_start(); // Start the session to access session variables
 require_once "decrypt.php"; // Include password decryption function
 require_once "mysql.php";  // Include database connection

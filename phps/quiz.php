@@ -17,6 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 header('Content-Type: application/json'); // Set response type to JSON
+// 设置 session cookie 参数，支持跨域、SameSite=None、secure
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '.guitar-guide.org',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'None'
+]);
 session_start(); // Start the session to access session variables
 require_once 'mysql.php'; // Include database connection
 
