@@ -1,18 +1,17 @@
 <?php
-// 允许指定来源跨域请求
-header("Access-Control-Allow-Origin: https://www.guitar-guide.org");
+$allowed_origins = [
+    "https://www.guitar-guide.org",
+    "https://guitar-guide-frontend-eqogsuppy-tangers-projects.vercel.app"
+];
 
-// 如果你想允许所有来源（不推荐，安全风险），写成：
-// header("Access-Control-Allow-Origin: *");
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowed_origins)) {
+    header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
+    header("Access-Control-Allow-Headers: Content-Type, Authorization");
+    header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+    header("Access-Control-Allow-Credentials: true");
+}
 
-// 允许请求方法
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-
-// 允许请求头
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-// 处理预检请求
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
