@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
-// 设置 session cookie 参数，支持跨域、SameSite=None、secure
 session_set_cookie_params([
     'lifetime' => 0,
     'path' => '/',

@@ -1,4 +1,13 @@
 <?php
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => '.guitar-guide.org',
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'None'
+]);
+session_start();
 $allowed_origins = [
     "https://www.guitar-guide.org",
     "https://guitar-guide-frontend-eqogsuppy-tangers-projects.vercel.app"
