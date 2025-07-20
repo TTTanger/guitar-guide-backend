@@ -7,10 +7,10 @@ $pass = getenv("DB_PASS");
 
 try {
     $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;";
-    $pdo = new PDO($dsn, $user, $pass);
+    $conn = new PDO($dsn, $user, $pass);
 
     // 设置错误模式
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("数据库连接失败: " . $e->getMessage());
 }
