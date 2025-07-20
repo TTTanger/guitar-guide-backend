@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION["id"] = $row['id'];
                 $_SESSION["username"] = $username;
                 $response["success"] = true;
-                $response["redirect"] = "../htmls/index.html"; // Redirect to homepage after login
+                $response["redirect"] = "../index.html"; // Redirect to homepage after login
             }
         }
     }
