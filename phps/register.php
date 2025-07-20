@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if($stmt2->execute()) {
                 $response["success"] = true;
                 $response["message"] = "User created successfully!";
-                $response["redirect"] = "../htmls/login.html"; // Redirect to login page after registration
+                $response["redirect"] = "../login.html"; // Redirect to login page after registration
             }
             $stmt2 = null;
         }
