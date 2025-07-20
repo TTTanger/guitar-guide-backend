@@ -1,6 +1,8 @@
 <?php
 // 允许指定来源跨域请求
+
 header("Access-Control-Allow-Origin: https://www.guitar-guide.org");
+header("Access-Control-Allow-Credentials: true");
 
 // 如果你想允许所有来源（不推荐，安全风险），写成：
 // header("Access-Control-Allow-Origin: *");
